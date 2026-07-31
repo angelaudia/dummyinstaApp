@@ -82,7 +82,7 @@
                                 <form action="{{ route('posts.destroy', $post) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded" type="submit">Delete Post</BUTTOn>
+                                    <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded" type="submit">Delete</BUTTOn>
                                 </form>
                                 @endif
                             </div>

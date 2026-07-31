@@ -14,7 +14,7 @@ class ProfileController extends Controller
 {
     public function show(User $user)
     {
-        $posts = $user->posts()->orderBy('created_at', 'desc')->get();
+        $posts = $user->posts()->with(['likes','comments.user'])->orderBy('created_at', 'desc')->get();
         return view('profile.show', compact('user', 'posts'));
     }
 
@@ -33,7 +33,15 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+
+        $data = $request->safe()->except(['profile_image']);
+
+        if($request->hasFile('profile_image')){
+            $data["profile_image"] = $request->file('profile_image')->store('avatars','public');
+        }
+
+        $user->fill($data);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
