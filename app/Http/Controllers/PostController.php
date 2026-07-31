@@ -18,11 +18,16 @@ class PostController extends Controller
 
     public function store(Request $request) {
         $request->validate ([
-            'content' => 'required|string|max:255'
+            'content' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
+
+            $imagePath = $request->file('image')->store('posts', 'public');
+
         Post::create ([
             'user_id' => auth()->id(),
             'content' => $request->content,
+            'image_path' => $imagePath,
         ]);
         return redirect()-> route('posts.index')->with('success', 'Posting berhasil ditambahkan');
     }

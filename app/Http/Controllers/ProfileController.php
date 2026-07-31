@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,12 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function show(User $user)
+    {
+        $posts = $user->posts()->orderBy('created_at', 'desc')->get();
+        return view('profile.show', compact('user', 'posts'));
+    }
+
     /**
      * Display the user's profile form.
      */
