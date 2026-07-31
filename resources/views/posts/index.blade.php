@@ -10,14 +10,14 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="container">
-                        <h1>Semua Postingan</h1>
+                        <h1>All Posts</h1>
                         @if (session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">{{session('success')}}</div>
                         @endif
 
                         <div class="flex justify-end mb-4">
                         <a class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded" href="{{ route('posts.create') }}">
-                            + Tambah Postingan Baru
+                            + Add New Post
                         </a>
                         </div>
 
@@ -42,7 +42,7 @@
                                 <form action="{{ route('posts.destroy', $post) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded" type="submit">Hapus postingan</BUTTOn>
+                                    <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded" type="submit">Delete Post</BUTTOn>
                                 </form>
                                 @endif
                             </div>

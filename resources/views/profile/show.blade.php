@@ -18,7 +18,7 @@
                         </p>
                     </div>
 
-                    <h2 class="text-xl font-bold mb-2"> Postingan oleh {{ $user->name }}</h2>
+                    <h2 class="text-xl font-bold mb-2"> Post by {{ $user->name }}</h2>
                     @forelse($posts as $post)
                     <div class="bg-white shadow-md rounded p-4 mb-4">
                         <div class="flex items-center justify-between mb-2">

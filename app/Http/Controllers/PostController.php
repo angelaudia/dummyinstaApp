@@ -29,11 +29,11 @@ class PostController extends Controller
             'content' => $request->content,
             'image_path' => $imagePath,
         ]);
-        return redirect()-> route('posts.index')->with('success', 'Posting berhasil ditambahkan');
+        return redirect()-> route('posts.index')->with('success', 'Post successfully added');
     }
 
     public function destroy (Post $post){
         $post->delete();
-        return redirect()-> route('posts.index')->with('success', 'Posting berhasil dihapus');
+        return redirect()-> route('posts.index')->with('success', 'Post successfully deleted');
     }
 }
