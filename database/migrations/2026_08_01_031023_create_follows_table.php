@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('follows', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadedOnDelete();
-            $table->foreignId('followed_user_id')->constrained('users')->cascadedOnDelete();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('followed_user_id');
             $table->timestamps();
-            $table->unique('user_id', 'followed_user_id');
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('followed_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unique(['user_id', 'followed_user_id']);
         });
     }
 

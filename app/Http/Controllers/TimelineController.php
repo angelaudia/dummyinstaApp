@@ -9,7 +9,7 @@ class TimelineController extends Controller
 {
     public function index(){
         $user=auth()->user();
-        $followingIds = $user->followings()->pluck('user_id');
+        $followingIds = $user->followings()->pluck('users.id');
 
         $posts = Post::with (['user','likes','comments.user'])
         ->whereIn('user_id',$followingIds)

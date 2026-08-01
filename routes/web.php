@@ -9,7 +9,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\TimelineController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
 
     Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
+
 });
 
 require __DIR__.'/auth.php';

@@ -1,130 +1,99 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+    <div class="min-h-screen bg-gray-50 py-8">
+        <div class="max-w-2xl mx-auto px-4">
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-avatar.png') }}"
-                        class="w-32 h-32 rounded-full object-cover shadow mb-2" alt="">
-                    <h1 class="text-2xl font-bold mb-4">
-                        {{ $user->name }}
-                    </h1>
-                    <div class="mb-6">
-                        <p>
-                            Joined on {{ $user->created_at->format('M d, Y') }}
-                        </p>
+            {{-- Profile Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                <div class="flex items-start gap-5">
+
+                    @if ($user->profile_image)
+                        <img src="{{ asset('storage/' . $user->profile_image) }}"
+                            class="w-20 h-20 rounded-full object-cover flex-shrink-0" alt="{{ $user->name }}">
+                    @else
+                        <div
+                            class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-2xl flex-shrink-0">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                    @endif
+
+                    <div class="flex-1">
+                        <h1 class="text-xl font-bold text-gray-800">{{ $user->name }}</h1>
+                        <p class="text-xs text-gray-400 mt-0.5">Joined {{ $user->created_at->format('M Y') }}</p>
+
+                        <div class="flex gap-6 mt-3">
+                            <div class="text-center">
+                                <p class="font-bold text-gray-800">{{ $posts->count() }}</p>
+                                <p class="text-xs text-gray-400">Posts</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-bold text-gray-800">{{ $user->followers()->count() }}</p>
+                                <p class="text-xs text-gray-400">Followers</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-bold text-gray-800">{{ $user->followings()->count() }}</p>
+                                <p class="text-xs text-gray-400">Following</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-6 mt-4">
-                        <span>
-                            <strong>{{ $user->followers()->count() }}</strong>
-                            followers</span>
-                        <span>
-                            <strong>{{ $user->followings()->count() }}</strong>
-                            following</span>
+                    <div class="flex-shrink-0">
                         @auth
-                            @if (auth()->id() !== $user->id)
+                            @if (auth()->id() === $user->id)
+                                <a href="{{ route('profile.edit') }}"
+                                    class="text-sm border border-gray-200 text-gray-600 hover:bg-gray-50 px-4 py-1.5 rounded-xl transition">
+                                    Edit Profile
+                                </a>
+                            @else
                                 <form action="{{ route('users.follow', $user) }}" method="POST">
                                     @csrf
                                     <button
-                                        class="px-3 py-1 rounded text-white
-                                        {{ auth()->user()->isFollowing($user)
-                                        ? 'bg-gray-400 hover:bg-gray-500'
-                                        : 'bg-blue-500 hover:bg-blue-600' }}">
+                                        class="text-sm px-4 py-1.5 rounded-xl text-white transition font-medium
+                                    {{ auth()->user()->isFollowing($user) ? 'bg-gray-400 hover:bg-gray-500' : 'bg-indigo-600 hover:bg-indigo-700' }}">
                                         {{ auth()->user()->isFollowing($user) ? 'Unfollow' : 'Follow' }}
                                     </button>
                                 </form>
                             @endif
                         @endauth
                     </div>
-
-                    <section class="mb-20 mt-4">
-                        <h2 class="text-xl font-semibold mb-2">About Me</h2>
-                        <div class="prose max-w-none">
-                            {{ $user->about ?: 'No bio yet.' }}
-                        </div>
-                    </section>
-
-                    <h2 class="text-xl font-bold mb-2"> Post by {{ $user->name }}</h2>
-                    @forelse($posts as $post)
-                        <div class="bg-white shadow-md rounded p-4 mb-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h2 class="font-bold">
-                                    {{ $user->name }}
-                                </h2>
-                                <small class="text-gray-500">{{ $post->created_at->diffForHumans() }}</small>
-                            </div>
-                            <p class="mb-2">{{ $post->content }}</p>
-
-                            @if ($post->image_path)
-                                <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $post->image_path) }}" alt=""
-                                        class="w-1/2 h-auto rounded">
-                                </div>
-                            @endif
-
-                            <div class="flex items-center gap-4 mb-2">
-                                <form action="{{ route('posts.like', $post) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="flex items-center gap-1">
-                                        @auth
-                                            @if ($post->isLikedBy(auth()->user()))
-                                                <svg class="w-5 h-5 fill-red-600">
-                                                    <use xlink:href="#icon-heart" />
-                                                </svg>
-                                                <span class="text-red-600">Unlike</span>
-                                            @else
-                                                <svg class="w-5 h-5 fill-none stroke-gray-600">
-                                                    <use xlink:href="#icon-heart" />
-                                                </svg>
-                                                <span class="text-red-600">Like</span>
-                                            @endif
-                                        </button>
-                                    @endauth
-                                </form>
-                                <span class="text-gray-600">{{ $post->likes()->count() }} likes</span>
-                            </div>
-                            <div class="space-y-2 mb-4">
-                                @foreach ($post->comments as $comment)
-                                    <div class="border-l-4 border-blue-200 pl-2">
-                                        <strong>{{ $comment->user->name }}</strong>
-                                        <small
-                                            class="text-gray-500">{{ $comment->created_at->diffForHumans() }}</small>
-                                        <p>{{ $comment->body }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            @auth
-                                <form action="{{ route('posts.comments.store', $post) }}" method="POST">
-                                    @csrf
-                                    <textarea name="body" rows="2" placeholder="add a comment..." class="w-full border rounded p=2 mb-2"></textarea>
-                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                                        Comment
-                                    </button>
-                                </form>
-                            @endauth
-
-                            @if (auth()->check() && auth()->id() === $post->user->id)
-                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded"
-                                        type="submit">Delete</BUTTOn>
-                                </form>
-                            @endif
-                        </div>
-                    @empty
-                        <p class="text-gray-600">No posts yet.</p>
-                    @endforelse
                 </div>
+
+                @if ($user->about)
+                    <div class="mt-4 pt-4 border-t border-gray-50">
+                        <p class="text-sm text-gray-600">{{ $user->about }}</p>
+                    </div>
+                @endif
             </div>
+
+            {{-- Posts --}}
+            <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Posts</h2>
+            <div class="flex justify-end mb-4">
+                <button onclick="document.getElementById('modal-post').classList.remove('hidden')"
+                    class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-xl transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Post
+                </button>
+            </div>
+
+            @forelse($posts as $post)
+                <x-post-card :post="$post" />
+            @empty
+                <div class="text-center py-16 text-gray-400">
+                    <p class="text-lg mb-1">No posts yet</p>
+                    @if (auth()->id() === $user->id)
+                        <p class="text-sm">Share your first memory!</p>
+                    @endif
+                </div>
+            @endforelse
+            <x-modal-post />
+            @if ($errors->any())
+                <script>
+                    document.getElementById('modal-post').classList.remove('hidden');
+                </script>
+            @endif
+
         </div>
-    </div>
     </div>
 </x-app-layout>
