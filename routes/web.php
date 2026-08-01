@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\TimelineController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
 
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
+
+    Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
 });
 
 require __DIR__.'/auth.php';
