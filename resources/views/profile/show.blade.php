@@ -9,8 +9,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <img src="{{ $user->profile_image ? asset('storage/'.$user->profile_image):asset('images/default-avatar.png') }}"
-                    class="w-32 h-32 rounded-full object-cover shadow mb-2" alt="">
+                    <img src="{{ $user->profile_image ? asset('storage/' . $user->profile_image) : asset('images/default-avatar.png') }}"
+                        class="w-32 h-32 rounded-full object-cover shadow mb-2" alt="">
                     <h1 class="text-2xl font-bold mb-4">
                         {{ $user->name }}
                     </h1>
@@ -20,10 +20,33 @@
                         </p>
                     </div>
 
-                    <section class="mb-20">
+                    <div class="flex items-center gap-6 mt-4">
+                        <span>
+                            <strong>{{ $user->followers()->count() }}</strong>
+                            followers</span>
+                        <span>
+                            <strong>{{ $user->followings()->count() }}</strong>
+                            following</span>
+                        @auth
+                            @if (auth()->id() !== $user->id)
+                                <form action="{{ route('users.follow', $user) }}" method="POST">
+                                    @csrf
+                                    <button
+                                        class="px-3 py-1 rounded text-white
+                                        {{ auth()->user()->isFollowing($user)
+                                        ? 'bg-gray-400 hover:bg-gray-500'
+                                        : 'bg-blue-500 hover:bg-blue-600' }}">
+                                        {{ auth()->user()->isFollowing($user) ? 'Unfollow' : 'Follow' }}
+                                    </button>
+                                </form>
+                            @endif
+                        @endauth
+                    </div>
+
+                    <section class="mb-20 mt-4">
                         <h2 class="text-xl font-semibold mb-2">About Me</h2>
                         <div class="prose max-w-none">
-                            {{ $user->about ?: "No bio yet." }}
+                            {{ $user->about ?: 'No bio yet.' }}
                         </div>
                     </section>
 
@@ -88,7 +111,7 @@
                             @endauth
 
                             @if (auth()->check() && auth()->id() === $post->user->id)
-                                <form action="{{ route('posts.destroy', $post) }}" class="inline-block">
+                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
                                     <BUTTOn class="bg-red-600 text-white font-semibold py-1 px-3 rounded"
